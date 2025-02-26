@@ -30,11 +30,22 @@ app.get("/admin", (req, res) => {
 });
 
 app.delete("/admin", (req, res) => {
+  // try {
+  throw new Error("sadasfsaf");
   res.send("Admin deleted succesfully");
+  // } catch (error) {
+  //   res.status(500).send("Server have a issue, conntact support");
+  // }
 });
 
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Welcome to the Dashboard");
+});
+
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
 });
 
 app.listen(port, () => {
