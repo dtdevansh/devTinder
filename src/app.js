@@ -55,6 +55,7 @@ app.patch("/user", async (req, res) => {
       data,
       {
         returnDocument: "after",
+        runValidators: true,
       }
     );
     res.send("User updated successfully " + newUser);
