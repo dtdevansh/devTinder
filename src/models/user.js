@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const userschema = new mongoose.Schema(
   {
@@ -22,12 +25,15 @@ const userschema = new mongoose.Schema(
       maxLength: 80,
       trim: true,
       lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error(`${value} is invalid email`);
+        }
+      },
     },
     password: {
       type: String,
       required: true,
-      minLength: 6,
-      maxLength: 30,
     },
     age: {
       type: Number,
@@ -55,6 +61,11 @@ const userschema = new mongoose.Schema(
       type: String,
       default:
         "https://img.freepik.com/premium-vector/user-icons-includes-user-icons-people-icons-symbols-premiumquality-graphic-design-elements_981536-526.jpg",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error(`${value} is invalid photoUrl`);
+        }
+      },
     },
     about: {
       type: String,
@@ -63,7 +74,7 @@ const userschema = new mongoose.Schema(
       lowercase: true,
     },
     interests: {
-      type: String,
+      type: [String],
       trim: true,
       lowercase: true,
     },
@@ -77,6 +88,20 @@ const userschema = new mongoose.Schema(
   }
 );
 
-const User = mongoose.model("User", userschema);
+userschema.methods.getJWT = async function (secret) {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, secret, {
+    expiresIn: "8h",
+  });
+  return token;
+};
 
-module.exports = User;
+userschema.methods.validatePassword = async function (inputPassword) {
+  const user = this;
+  const passwordHash = user.password;
+
+  const isPasswordValid = await bcrypt.compare(inputPassword, passwordHash);
+  return isPasswordValid;
+};
+
+module.exports = mongoose.model("User", userschema);
