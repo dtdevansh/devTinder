@@ -20,7 +20,7 @@ authRouter.post("/signup", async (req, res) => {
 
     const userExist = await User.find({ emailId: emailId });
     if (userExist.length === 1) {
-      res.send("User already exists with this email ID");
+      throw new Error("User already exists with this email ID");
     } else {
       const user = new User({
         firstName,
@@ -29,7 +29,7 @@ authRouter.post("/signup", async (req, res) => {
         password: passwordHash,
       });
       await user.save();
-      res.send("User added succesfully");
+      res.json({ message: "User added succesfully" });
     }
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);
@@ -54,7 +54,7 @@ authRouter.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 8 * 3600000),
       });
 
-      res.send("Login Succesfull");
+      res.json({ message: "Login Succesfull" });
     } else {
       throw new Error("The Email or Password is not correct!");
     }
@@ -67,7 +67,7 @@ authRouter.post("/logout", async (req, res) => {
   res.cookie("token", "", {
     expires: new Date(Date.now()),
   });
-  res.send("logout Succesfull!!");
+  res.json({ message: "logout Succesfull!!" });
 });
 
 module.exports = authRouter;

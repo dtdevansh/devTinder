@@ -69,7 +69,7 @@ const userschema = new mongoose.Schema(
     },
     about: {
       type: String,
-      default: "Hey i am New on devTinfer and want to make cool friends",
+      default: "Hey i am New on devTinder and want to make cool friends",
       trim: true,
       lowercase: true,
     },
@@ -87,6 +87,8 @@ const userschema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userschema.index({ firstName: 1 });
 
 userschema.methods.getJWT = async function (secret) {
   const user = this;

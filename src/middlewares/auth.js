@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
-const secret = "SecurityTokenByJWT@devTinder11";
+const secret = process.env.JWT_SECRET;
 
 const userAuth = async (req, res, next) => {
   console.log("User auth is getting checked");
